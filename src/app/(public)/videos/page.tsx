@@ -1,3 +1,12 @@
-export default function VideosPage() {
-  return <main className="p-8"><h1 className="text-2xl font-bold">Videos</h1></main>
+import { CategoryPage } from '@/components/public/category-page'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = { title: 'Videos' }
+
+export default function VideosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string; sort?: string }>
+}) {
+  return <CategoryPage category="VIDEO" searchParams={searchParams} />
 }
