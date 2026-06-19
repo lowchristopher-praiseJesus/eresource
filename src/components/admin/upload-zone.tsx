@@ -92,7 +92,12 @@ export function UploadZone({ onUploadComplete, disabled }: UploadZoneProps) {
           if (file && !disabled) handleFile(file)
         }}
         onClick={() => !disabled && inputRef.current?.click()}
-        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') inputRef.current?.click() }}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            inputRef.current?.click()
+          }
+        }}
       >
         <input
           ref={inputRef}

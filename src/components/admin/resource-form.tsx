@@ -77,8 +77,8 @@ export function ResourceForm({
         />
         {chips.length > 0 && (
           <div className="flex flex-wrap gap-1.5 pt-1">
-            {chips.slice(0, 20).map((tag, i) => (
-              <Badge key={i} variant="secondary" className="text-xs">
+            {chips.slice(0, 20).map((tag) => (
+              <Badge key={tag} variant="secondary" className="text-xs">
                 {tag}
               </Badge>
             ))}

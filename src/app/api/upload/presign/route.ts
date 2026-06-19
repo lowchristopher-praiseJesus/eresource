@@ -25,8 +25,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
   }
 
-  const { filename, contentType, fileSizeBytes } = parsed.data
-  const ext = filename.split('.').pop()
+  const { filename, contentType } = parsed.data
+  const parts = filename.split('.')
+  const ext = parts.length > 1 ? parts.pop() : 'bin'
   const key = `uploads/${Date.now()}-${crypto.randomUUID()}.${ext}`
 
   const url = await getSignedUrl(
@@ -35,7 +36,6 @@ export async function POST(req: NextRequest) {
       Bucket: process.env.R2_BUCKET_NAME!,
       Key: key,
       ContentType: contentType,
-      ContentLength: fileSizeBytes,
     }),
     { expiresIn: 3600 }
   )
