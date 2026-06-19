@@ -13,6 +13,12 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  // Test files routinely mock complex library types (Auth.js v5 sessions)
+  // that cannot be typed without `as any`.
+  {
+    files: ["src/__tests__/**"],
+    rules: { "@typescript-eslint/no-explicit-any": "off" },
+  },
 ]);
 
 export default eslintConfig;
