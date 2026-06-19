@@ -33,7 +33,7 @@ export function Sidebar({ userEmail }: SidebarProps) {
             href={href}
             onClick={() => setMobileOpen(false)}
             className={`flex items-center px-3 py-2 rounded-md text-sm font-medium mb-1 transition-colors ${
-              pathname.startsWith(href)
+              pathname === href || pathname.startsWith(href + '/')
                 ? 'bg-slate-100 text-slate-900'
                 : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
