@@ -13,7 +13,8 @@ interface Props {
 export default async function ResourcesPage({ searchParams }: Props) {
   const { page: pageStr, category, search } = await searchParams
 
-  const page = Math.max(1, parseInt(pageStr ?? '1', 10))
+  const parsed = parseInt(pageStr ?? '1', 10)
+  const page = Math.max(1, isNaN(parsed) ? 1 : parsed)
   const limit = 20
 
   const validCategory = category && (VALID_CATEGORIES as string[]).includes(category)

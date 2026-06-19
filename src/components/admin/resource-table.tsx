@@ -76,7 +76,7 @@ export function ResourceTable({
           onKeyDown={handleSearchKeyDown}
           className="max-w-xs"
         />
-        <Select defaultValue={currentCategory ?? 'all'} onValueChange={handleCategoryChange}>
+        <Select value={currentCategory ?? 'all'} onValueChange={handleCategoryChange}>
           <SelectTrigger className="w-44">
             <SelectValue placeholder="All categories" />
           </SelectTrigger>
