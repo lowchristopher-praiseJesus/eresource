@@ -5,13 +5,21 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 
-export function Header() {
+interface HeaderProps {
+  activeCategory?: string
+}
+
+export function Header({ activeCategory }: HeaderProps) {
   const router = useRouter()
   const [query, setQuery] = useState('')
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
-    if (query.trim()) router.push(`/search?q=${encodeURIComponent(query.trim())}`)
+    const q = query.trim()
+    if (!q) return
+    const params = new URLSearchParams({ q })
+    if (activeCategory) params.set('category', activeCategory)
+    router.push(`/search?${params.toString()}`)
   }
 
   return (
