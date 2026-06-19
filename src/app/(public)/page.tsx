@@ -8,6 +8,8 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'eResource' }
 
+export const dynamic = 'force-dynamic'
+
 const CATEGORY_TILES = [
   {
     label: 'Videos',

@@ -36,7 +36,10 @@ export default async function SearchPage({
     try {
       const raw = await db.$queryRaw<Resource[]>(
         Prisma.sql`
-          SELECT * FROM "Resource"
+          SELECT id, name, description, tags, category, "resourceType", "fileKey",
+                 "youtubeUrl", "mimeType", "fileSizeBytes", "isPinned", "pinnedOrder",
+                 "likeCount", "createdAt", "updatedAt"
+          FROM "Resource"
           WHERE search_vector @@ plainto_tsquery('english', ${query})
           ORDER BY ts_rank(search_vector, plainto_tsquery('english', ${query})) DESC
           LIMIT 50
