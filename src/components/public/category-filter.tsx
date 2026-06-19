@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import {
   Select,
   SelectContent,
@@ -9,18 +9,19 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-export function CategoryFilter({ currentCategory }: { currentCategory: string }) {
+interface CategoryFilterProps {
+  currentCategory: string
+  currentQuery: string
+}
+
+export function CategoryFilter({ currentCategory, currentQuery }: CategoryFilterProps) {
   const router = useRouter()
-  const searchParams = useSearchParams()
 
   function handleChange(value: string | null) {
-    const params = new URLSearchParams(searchParams.toString())
-    if (value && value !== 'all') {
-      params.set('category', value)
-    } else {
-      params.delete('category')
-    }
-    router.push(`?${params.toString()}`)
+    const params = new URLSearchParams()
+    if (currentQuery) params.set('q', currentQuery)
+    if (value && value !== 'all') params.set('category', value)
+    router.push(`/search?${params.toString()}`)
   }
 
   return (
