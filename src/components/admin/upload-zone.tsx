@@ -46,8 +46,8 @@ export function UploadZone({ onUploadComplete, disabled }: UploadZoneProps) {
         }),
       })
       if (!presignRes.ok) {
-        const err = await presignRes.json().catch(() => ({}))
-        throw new Error((err as any).error ?? 'Could not get upload URL')
+        const err = await presignRes.json().catch(() => ({})) as { error?: string }
+        throw new Error(err.error ?? 'Could not get upload URL')
       }
       const { url, key } = await presignRes.json() as { url: string; key: string }
 

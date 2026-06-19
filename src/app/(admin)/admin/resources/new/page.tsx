@@ -80,12 +80,13 @@ export default function NewResourcePage() {
         body: JSON.stringify(body),
       })
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        throw new Error((err as any).error ?? 'Failed to save resource')
+        const err = await res.json().catch(() => ({})) as { error?: string }
+        throw new Error(err.error ?? 'Failed to save resource')
       }
       router.push('/admin/resources')
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Failed to save resource')
+    } finally {
       setSubmitting(false)
     }
   }
