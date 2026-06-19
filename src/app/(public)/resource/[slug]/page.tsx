@@ -1,7 +1,14 @@
+export const dynamic = 'force-dynamic'
+
 import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { MediaPlayer } from '@/components/public/media-player'
 import { Badge } from '@/components/ui/badge'
+import { LikeButton } from '@/components/public/like-button'
+import { DownloadButton } from '@/components/public/download-button'
+import { CopyLinkButton } from '@/components/public/copy-link-button'
+import { ResourceCard } from '@/components/public/resource-card'
+import { getFileUrl } from '@/lib/utils'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
@@ -30,11 +37,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ResourcePage({ params }: Props) {
   const { slug } = await params
   const id = slug.split('-')[0]
+
   const resource = await db.resource.findUnique({ where: { id } })
   if (!resource) notFound()
 
+  const relatedResources = await db.resource.findMany({
+    where: { category: resource.category, id: { not: id } },
+    orderBy: { createdAt: 'desc' },
+    take: 4,
+  })
+
   const categoryLabel = CATEGORY_LABELS[resource.category]
   const categoryHref = CATEGORY_HREFS[resource.category]
+  const isFile = resource.resourceType !== 'YOUTUBE'
+  const fileUrl = resource.fileKey ? getFileUrl(resource.fileKey) : null
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -67,17 +83,36 @@ export default async function ResourcePage({ params }: Props) {
             </span>
           ))}
         </div>
-        <div className="flex items-center gap-4 text-sm text-slate-400 pt-2 border-t border-slate-100">
-          <span>♥ {resource.likeCount}</span>
-          <span>
-            {new Date(resource.createdAt).toLocaleDateString('en-SG', {
-              day: 'numeric',
-              month: 'short',
-              year: 'numeric',
-            })}
-          </span>
+
+        {/* Action buttons */}
+        <div className="flex flex-wrap items-center gap-3 pt-2">
+          <LikeButton resourceId={resource.id} initialCount={resource.likeCount} />
+          {isFile && fileUrl && (
+            <DownloadButton fileUrl={fileUrl} name={resource.name} />
+          )}
+          <CopyLinkButton />
+        </div>
+
+        <div className="text-sm text-slate-400 pt-2 border-t border-slate-100">
+          {new Date(resource.createdAt).toLocaleDateString('en-SG', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+          })}
         </div>
       </div>
+
+      {/* Related resources */}
+      {relatedResources.length > 0 && (
+        <div className="mt-12">
+          <h2 className="text-lg font-semibold mb-4">More {categoryLabel} resources</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {relatedResources.map(r => (
+              <ResourceCard key={r.id} resource={r} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
