@@ -39,7 +39,7 @@ describe('POST /api/upload/presign', () => {
   })
 
   it('returns 401 when not authenticated', async () => {
-    vi.mocked(auth).mockResolvedValueOnce(null)
+    vi.mocked(auth).mockResolvedValueOnce(null as any)
     const res = await POST(makeRequest({
       filename: 'sermon.mp4',
       contentType: 'video/mp4',
