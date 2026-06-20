@@ -68,10 +68,7 @@ export default async function HomePage() {
       {/* Hero — full-width burgundy, flows seamlessly from header */}
       <section className="bg-hero text-center py-20 px-4">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-6xl font-bold tracking-tight font-heading text-[oklch(0.97_0.008_60)]">
-            eResource
-          </h1>
-          <p className="mt-3 text-lg text-[oklch(0.80_0.01_15)]">
+          <p className="text-lg text-[oklch(0.80_0.01_15)]">
             Your ministry&apos;s digital resource library
           </p>
           <form
