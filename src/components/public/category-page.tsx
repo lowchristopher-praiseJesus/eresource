@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { ResourceCard } from '@/components/public/resource-card'
 import { SortSelector } from '@/components/public/sort-selector'
 import Link from 'next/link'
+import { ChevronLeft } from 'lucide-react'
 
 const CATEGORY_DISPLAY: Record<Category, string> = {
   VIDEO: 'Videos',
@@ -59,6 +60,13 @@ export async function CategoryPage({ category, searchParams }: CategoryPageProps
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
+      <Link
+        href="/"
+        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+      >
+        <ChevronLeft className="h-4 w-4" />
+        Home
+      </Link>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-semibold">{label}</h1>
