@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   const key = `uploads/${Date.now()}-${crypto.randomUUID()}.${ext}`
 
   if (process.env.NODE_ENV === 'development') {
-    const localUrl = new URL('/api/upload/local', process.env.NEXTAUTH_URL ?? 'http://localhost:3000')
+    const localUrl = new URL('/api/upload/local', req.nextUrl.origin)
     localUrl.searchParams.set('key', key)
     return NextResponse.json({ url: localUrl.toString(), key })
   }
