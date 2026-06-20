@@ -27,13 +27,17 @@ const CATEGORY_LABELS = {
   PICTURE: 'Picture',
 } as const
 
-export function ResourceCard({ resource }: { resource: Resource }) {
+export function ResourceCard({ resource, backHref }: { resource: Resource; backHref?: string }) {
   const { Icon, bg, color } = CATEGORY_ICONS[resource.category]
   const extraTags = resource.tags.length > 3 ? resource.tags.length - 3 : 0
 
+  const href = backHref
+    ? `${resourceUrl(resource)}?from=${encodeURIComponent(backHref)}`
+    : resourceUrl(resource)
+
   return (
     <Link
-      href={resourceUrl(resource)}
+      href={href}
       className="group block rounded-lg border border-[oklch(0.90_0.010_40)] overflow-hidden hover:border-[oklch(0.85_0.015_40)] hover:-translate-y-0.5 hover:shadow-lg transition-all duration-150"
     >
       {/* Thumbnail */}

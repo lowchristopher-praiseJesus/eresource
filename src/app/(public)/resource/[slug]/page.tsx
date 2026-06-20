@@ -26,7 +26,7 @@ const CATEGORY_HREFS = {
   PICTURE: '/pictures',
 } as const
 
-type Props = { params: Promise<{ slug: string }> }
+type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ from?: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const id = (await params).slug.split('-')[0]
@@ -34,21 +34,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: resource?.name ?? 'Resource' }
 }
 
-export default async function ResourcePage({ params }: Props) {
+export default async function ResourcePage({ params, searchParams }: Props) {
   const { slug } = await params
+  const { from } = await searchParams
   const id = slug.split('-')[0]
 
   const resource = await db.resource.findUnique({ where: { id } })
   if (!resource) notFound()
 
-  const relatedResources = await db.resource.findMany({
-    where: { category: resource.category, id: { not: id } },
-    orderBy: { createdAt: 'desc' },
-    take: 4,
-  })
+  const [relatedResources, backTopic] = await Promise.all([
+    db.resource.findMany({
+      where: { category: resource.category, id: { not: id } },
+      orderBy: { createdAt: 'desc' },
+      take: 4,
+    }),
+    from?.startsWith('/topic/')
+      ? db.topic.findUnique({ where: { slug: from.slice('/topic/'.length) } })
+      : null,
+  ])
 
   const categoryLabel = CATEGORY_LABELS[resource.category]
   const categoryHref = CATEGORY_HREFS[resource.category]
+  const backHref = backTopic ? from! : categoryHref
+  const backLabel = backTopic ? backTopic.name : categoryLabel
   const isFile = resource.resourceType !== 'YOUTUBE'
   const fileUrl = resource.fileKey ? getFileUrl(resource.fileKey) : null
 
@@ -56,8 +64,8 @@ export default async function ResourcePage({ params }: Props) {
     <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Breadcrumb */}
       <nav className="text-sm text-slate-500 mb-6">
-        <Link href={categoryHref} className="hover:text-slate-900 transition-colors">
-          {categoryLabel}
+        <Link href={backHref} className="hover:text-slate-900 transition-colors">
+          {backLabel}
         </Link>
         <span className="mx-2">›</span>
         <span className="text-slate-900">{resource.name}</span>

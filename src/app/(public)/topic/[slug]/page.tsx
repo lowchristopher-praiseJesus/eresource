@@ -57,7 +57,7 @@ export default async function TopicPage({ params }: Props) {
       ) : (
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {resources.map((r) => (
-            <ResourceCard key={r.id} resource={r} />
+            <ResourceCard key={r.id} resource={r} backHref={`/topic/${slug}`} />
           ))}
         </div>
       )}
