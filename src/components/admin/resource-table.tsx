@@ -70,9 +70,6 @@ export function ResourceTable({
   async function togglePin(resource: Resource) {
     const isPinning = !resource.isPinned
     const body: Record<string, unknown> = { isPinned: isPinning }
-    if (isPinning) {
-      body.pinnedOrder = pinnedCount + 1
-    }
     await fetch(`/api/resources/${resource.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },

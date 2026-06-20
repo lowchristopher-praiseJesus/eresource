@@ -34,6 +34,7 @@ export async function PATCH(
 
   // Enforce max-6 pinned when pinning a previously-unpinned resource
   if (data.isPinned === true && !existing.isPinned) {
+    // Non-atomic count check: acceptable for single-admin deployments
     const pinnedCount = await db.resource.count({ where: { isPinned: true } })
     if (pinnedCount >= 6) {
       return NextResponse.json(
@@ -41,6 +42,15 @@ export async function PATCH(
         { status: 400 }
       )
     }
+  }
+
+  // Auto-assign pinnedOrder when pinning without an explicit order
+  if (data.isPinned === true && data.pinnedOrder === undefined) {
+    const maxOrderResult = await db.resource.aggregate({
+      where: { isPinned: true },
+      _max: { pinnedOrder: true },
+    })
+    data.pinnedOrder = (maxOrderResult._max.pinnedOrder ?? 0) + 1
   }
 
   // Clear pinnedOrder when unpinning
