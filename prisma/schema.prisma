@@ -23,10 +23,30 @@ model Resource {
   likeCount     Int          @default(0)
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+  topics        ResourceTopic[]
 
   @@index([category])
   @@index([isPinned, pinnedOrder])
   @@index([createdAt(sort: Desc)])
+}
+
+model Topic {
+  id          String          @id @default(cuid())
+  name        String
+  slug        String          @unique
+  description String?
+  order       Int
+  createdAt   DateTime        @default(now())
+  resources   ResourceTopic[]
+}
+
+model ResourceTopic {
+  resourceId  String
+  topicId     String
+  resource    Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  topic       Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@id([resourceId, topicId])
 }
 
 model Admin {
