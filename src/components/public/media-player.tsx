@@ -46,11 +46,30 @@ export function MediaPlayer({ resource }: { resource: Resource }) {
 
   if (mimeType === 'application/pdf') {
     return (
-      <iframe
-        src={src}
-        title={name}
-        className="w-full h-[80vh] rounded-lg border border-slate-200"
-      />
+      <>
+        {/* Desktop: inline iframe */}
+        <iframe
+          src={src}
+          title={name}
+          className="hidden md:block w-full h-[80vh] rounded-lg border border-slate-200"
+        />
+        {/* Mobile: iframe doesn't work — open in native viewer */}
+        <div className="md:hidden flex flex-col items-center justify-center gap-4 py-16 rounded-lg border border-slate-200 bg-slate-50">
+          <FileText className="h-12 w-12 text-slate-400" />
+          <p className="text-sm text-slate-500 text-center px-4">
+            PDF preview isn&apos;t supported on this device.
+          </p>
+          <a
+            href={src}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            <FileText className="h-4 w-4" />
+            Open PDF
+          </a>
+        </div>
+      </>
     )
   }
 
