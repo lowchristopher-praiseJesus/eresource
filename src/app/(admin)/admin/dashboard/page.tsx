@@ -1,8 +1,11 @@
+export const dynamic = 'force-dynamic'
+
 import Link from 'next/link'
 import { db } from '@/lib/db'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { PinnedManager } from '@/components/admin/pinned-manager'
 import type { Category } from '@prisma/client'
 
 const CATEGORY_LABELS: Record<Category, string> = {
@@ -15,10 +18,15 @@ const CATEGORY_LABELS: Record<Category, string> = {
 const ALL_CATEGORIES: Category[] = ['VIDEO', 'AUDIO', 'DOCUMENT', 'PICTURE']
 
 export default async function DashboardPage() {
-  const [total, categoryCounts, recent] = await Promise.all([
+  const [total, categoryCounts, recent, likesAgg, pinned] = await Promise.all([
     db.resource.count(),
     db.resource.groupBy({ by: ['category'], _count: { _all: true } }),
     db.resource.findMany({ orderBy: { createdAt: 'desc' }, take: 5 }),
+    db.resource.aggregate({ _sum: { likeCount: true } }),
+    db.resource.findMany({
+      where: { isPinned: true },
+      orderBy: { pinnedOrder: 'asc' },
+    }),
   ])
 
   const countMap: Partial<Record<Category, number>> = {}
@@ -26,12 +34,14 @@ export default async function DashboardPage() {
     countMap[row.category] = row._count._all
   }
 
+  const totalLikes = likesAgg._sum.likeCount ?? 0
+
   return (
     <div>
       <h1 className="text-2xl font-semibold mb-6">Dashboard</h1>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-slate-500">Total</CardTitle>
@@ -52,6 +62,27 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
         ))}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-slate-500">Total Likes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{totalLikes}</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Pinned resources manager */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">
+            Featured Resources ({pinned.length}/6)
+          </h2>
+          <Button render={<Link href="/admin/resources" />} variant="outline" size="sm">
+            Manage
+          </Button>
+        </div>
+        <PinnedManager initialResources={pinned} />
       </div>
 
       {/* Recently added */}

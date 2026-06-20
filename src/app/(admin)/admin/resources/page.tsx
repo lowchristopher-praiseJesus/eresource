@@ -26,7 +26,7 @@ export default async function ResourcesPage({ searchParams }: Props) {
     ...(search ? { name: { contains: search, mode: 'insensitive' as const } } : {}),
   }
 
-  const [resources, total] = await Promise.all([
+  const [resources, total, pinnedCount] = await Promise.all([
     db.resource.findMany({
       where,
       orderBy: { createdAt: 'desc' },
@@ -34,6 +34,7 @@ export default async function ResourcesPage({ searchParams }: Props) {
       take: limit,
     }),
     db.resource.count({ where }),
+    db.resource.count({ where: { isPinned: true } }),
   ])
 
   return (
@@ -52,6 +53,7 @@ export default async function ResourcesPage({ searchParams }: Props) {
         totalPages={Math.ceil(total / limit)}
         currentCategory={validCategory}
         currentSearch={search}
+        pinnedCount={pinnedCount}
       />
     </div>
   )

@@ -29,14 +29,16 @@ interface ResourceTableProps {
   totalPages: number
   currentCategory?: string
   currentSearch?: string
+  pinnedCount: number
 }
 
 export function ResourceTable({
-  resources, total, page, totalPages, currentCategory, currentSearch,
+  resources, total, page, totalPages, currentCategory, currentSearch, pinnedCount,
 }: ResourceTableProps) {
   const router = useRouter()
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null)
   const [searchValue, setSearchValue] = useState(currentSearch ?? '')
+  const [pinningId, setPinningId] = useState<string | null>(null)
 
   function buildUrl(updates: Record<string, string | undefined>) {
     const params = new URLSearchParams()
@@ -63,6 +65,20 @@ export function ResourceTable({
       if (searchValue) params.set('search', searchValue)
       router.push(`/admin/resources?${params.toString()}`)
     }
+  }
+
+  async function togglePin(resource: Resource) {
+    const isPinning = !resource.isPinned
+    const body: Record<string, unknown> = { isPinned: isPinning }
+    if (isPinning) {
+      body.pinnedOrder = pinnedCount + 1
+    }
+    await fetch(`/api/resources/${resource.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    router.refresh()
   }
 
   return (
@@ -102,6 +118,7 @@ export function ResourceTable({
               <TableHead>Category</TableHead>
               <TableHead>Tags</TableHead>
               <TableHead>Likes</TableHead>
+              <TableHead>Pinned</TableHead>
               <TableHead>Added</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -109,7 +126,7 @@ export function ResourceTable({
           <TableBody>
             {resources.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-slate-500 py-10">
+                <TableCell colSpan={7} className="text-center text-slate-500 py-10">
                   No resources found
                 </TableCell>
               </TableRow>
@@ -136,6 +153,7 @@ export function ResourceTable({
                   </div>
                 </TableCell>
                 <TableCell>{resource.likeCount}</TableCell>
+                <TableCell>{resource.isPinned ? '📌' : '—'}</TableCell>
                 <TableCell className="text-slate-500 text-sm">
                   {new Date(resource.createdAt).toLocaleDateString('en-US', {
                     month: 'short', day: 'numeric', year: 'numeric',
@@ -143,6 +161,19 @@ export function ResourceTable({
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex gap-2 justify-end">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={pinningId === resource.id || (!resource.isPinned && pinnedCount >= 6)}
+                      title={!resource.isPinned && pinnedCount >= 6 ? 'Max 6 pinned' : undefined}
+                      onClick={async () => {
+                        setPinningId(resource.id)
+                        await togglePin(resource)
+                        setPinningId(null)
+                      }}
+                    >
+                      {resource.isPinned ? 'Unpin' : 'Pin'}
+                    </Button>
                     <Button variant="outline" size="sm" render={<Link href={`/admin/resources/${resource.id}/edit`} />}>
                       Edit
                     </Button>
