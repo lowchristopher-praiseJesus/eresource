@@ -1,5 +1,6 @@
 import { db } from '@/lib/db'
 import { ResourceCard } from '@/components/public/resource-card'
+import { TopicToc } from '@/components/public/topic-toc'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import Link from 'next/link'
@@ -46,7 +47,7 @@ const CATEGORY_TILES = [
 ] as const
 
 export default async function HomePage() {
-  const [pinned, recent] = await Promise.all([
+  const [pinned, recent, topics] = await Promise.all([
     db.resource.findMany({
       where: { isPinned: true },
       orderBy: { pinnedOrder: 'asc' },
@@ -55,6 +56,10 @@ export default async function HomePage() {
     db.resource.findMany({
       orderBy: { createdAt: 'desc' },
       take: 8,
+    }),
+    db.topic.findMany({
+      orderBy: { order: 'asc' },
+      include: { _count: { select: { resources: true } } },
     }),
   ])
 
@@ -71,6 +76,9 @@ export default async function HomePage() {
           <Button type="submit" className="sm:w-auto">Search</Button>
         </form>
       </section>
+
+      {/* Table of Contents */}
+      <TopicToc topics={topics} />
 
       {/* Featured (only if any pinned resources exist) */}
       {pinned.length > 0 && (
