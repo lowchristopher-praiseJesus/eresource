@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { type Resource } from '@prisma/client'
 import { Badge } from '@/components/ui/badge'
-import { Film, Music, FileText, Image as ImageIcon } from 'lucide-react'
+import { Film, Music, FileText, Image as ImageIcon, Heart } from 'lucide-react'
 import { getFileUrl, slugify } from '@/lib/utils'
 
 function resourceUrl(resource: Resource): string {
@@ -34,7 +34,7 @@ export function ResourceCard({ resource }: { resource: Resource }) {
   return (
     <Link
       href={resourceUrl(resource)}
-      className="group block rounded-lg border border-slate-200 overflow-hidden hover:border-slate-300 hover:shadow-sm transition-all"
+      className="group block rounded-lg border border-[oklch(0.90_0.010_40)] overflow-hidden hover:border-[oklch(0.85_0.015_40)] hover:-translate-y-0.5 hover:shadow-lg transition-all duration-150"
     >
       {/* Thumbnail */}
       <div className={`h-40 flex items-center justify-center ${bg} relative overflow-hidden`}>
@@ -59,9 +59,9 @@ export function ResourceCard({ resource }: { resource: Resource }) {
 
       {/* Body */}
       <div className="p-3 space-y-2">
-        <p className="font-medium text-sm line-clamp-2">{resource.name}</p>
+        <p className="font-semibold text-sm line-clamp-2">{resource.name}</p>
         {resource.description && (
-          <p className="text-xs text-slate-600 line-clamp-2">{resource.description}</p>
+          <p className="text-xs text-muted-foreground line-clamp-2">{resource.description}</p>
         )}
         <div>
           <Badge variant="secondary">{CATEGORY_LABELS[resource.category]}</Badge>
@@ -69,19 +69,22 @@ export function ResourceCard({ resource }: { resource: Resource }) {
         {resource.tags.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {resource.tags.slice(0, 3).map(tag => (
-              <span key={tag} className="text-xs px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
+              <span key={tag} className="text-xs px-1.5 py-0.5 rounded bg-stone-100 text-stone-600">
                 {tag}
               </span>
             ))}
             {extraTags > 0 && (
-              <span className="text-xs px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
+              <span className="text-xs px-1.5 py-0.5 rounded bg-stone-100 text-stone-600">
                 +{extraTags}
               </span>
             )}
           </div>
         )}
-        <div className="flex items-center justify-between text-xs text-slate-600">
-          <span>♥ {resource.likeCount}</span>
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <Heart className="h-3 w-3 text-[oklch(0.74_0.13_75)]" fill="currentColor" />
+            {resource.likeCount}
+          </span>
           <span>
             {new Date(resource.createdAt).toLocaleDateString('en-SG', {
               day: 'numeric',
