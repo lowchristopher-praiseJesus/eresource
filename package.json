@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit"
   },
   "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts",
+    "seed:admin": "tsx prisma/seed.ts --email admin@missionwork.com --password password"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1072.0",
