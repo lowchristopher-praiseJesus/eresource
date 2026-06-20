@@ -98,3 +98,110 @@ describe('POST /api/topics', () => {
     )
   })
 })
+
+import { PATCH, DELETE } from '@/app/api/topics/[id]/route'
+
+const mockParams = { params: Promise.resolve({ id: 'topic1' }) }
+
+function makePatch(body: unknown) {
+  return new NextRequest('http://localhost/api/topics/topic1', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+}
+function makeDelete() {
+  return new NextRequest('http://localhost/api/topics/topic1', { method: 'DELETE' })
+}
+
+describe('PATCH /api/topics/[id]', () => {
+  beforeEach(() => vi.resetAllMocks())
+
+  it('returns 401 when not authenticated', async () => {
+    vi.mocked(auth).mockResolvedValueOnce(null as any)
+    const res = await PATCH(makePatch({ name: 'Updated' }), mockParams)
+    expect(res.status).toBe(401)
+  })
+
+  it('returns 404 when topic not found', async () => {
+    vi.mocked(auth).mockResolvedValueOnce(mockSession as any)
+    vi.mocked(db.topic.findUnique).mockResolvedValueOnce(null)
+    const res = await PATCH(makePatch({ name: 'Updated' }), mockParams)
+    expect(res.status).toBe(404)
+  })
+
+  it('returns 400 when body is empty', async () => {
+    vi.mocked(auth).mockResolvedValueOnce(mockSession as any)
+    vi.mocked(db.topic.findUnique).mockResolvedValueOnce(mockTopic as any)
+    const res = await PATCH(makePatch({}), mockParams)
+    expect(res.status).toBe(400)
+  })
+
+  it('returns 200 with updated topic and does not change slug on rename', async () => {
+    vi.mocked(auth).mockResolvedValueOnce(mockSession as any)
+    vi.mocked(db.topic.findUnique).mockResolvedValueOnce(mockTopic as any)
+    const updated = { ...mockTopic, name: 'Renamed Topic' }
+    vi.mocked(db.topic.update).mockResolvedValueOnce(updated as any)
+    const res = await PATCH(makePatch({ name: 'Renamed Topic' }), mockParams)
+    expect(res.status).toBe(200)
+    const body = await res.json()
+    expect(body.topic.name).toBe('Renamed Topic')
+    expect(body.topic.slug).toBe('spiritual-preparation') // slug unchanged
+  })
+
+  it('swaps order with neighbor when order is changed', async () => {
+    vi.mocked(auth).mockResolvedValueOnce(mockSession as any)
+    vi.mocked(db.topic.findUnique).mockResolvedValueOnce(mockTopic as any) // current topic order=2
+    const neighbor = { ...mockTopic, id: 'topic2', order: 1 }
+    vi.mocked(db.topic.findFirst).mockResolvedValueOnce(neighbor as any) // neighbor at order=1
+    vi.mocked(db.topic.update).mockResolvedValue({ ...mockTopic, order: 1 } as any)
+    const res = await PATCH(makePatch({ order: 1 }), mockParams)
+    expect(res.status).toBe(200)
+    expect(db.topic.update).toHaveBeenCalledTimes(2) // neighbor swap + self update
+    expect(db.topic.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'topic2' }, data: { order: 2 } })
+    )
+  })
+})
+
+describe('DELETE /api/topics/[id]', () => {
+  beforeEach(() => vi.resetAllMocks())
+
+  it('returns 401 when not authenticated', async () => {
+    vi.mocked(auth).mockResolvedValueOnce(null as any)
+    const res = await DELETE(makeDelete(), mockParams)
+    expect(res.status).toBe(401)
+  })
+
+  it('returns 404 when topic not found', async () => {
+    vi.mocked(auth).mockResolvedValueOnce(mockSession as any)
+    vi.mocked(db.topic.findUnique).mockResolvedValueOnce(null)
+    const res = await DELETE(makeDelete(), mockParams)
+    expect(res.status).toBe(404)
+  })
+
+  it('returns 409 when topic has resources assigned', async () => {
+    vi.mocked(auth).mockResolvedValueOnce(mockSession as any)
+    vi.mocked(db.topic.findUnique).mockResolvedValueOnce({
+      ...mockTopic,
+      _count: { resources: 3 },
+    } as any)
+    const res = await DELETE(makeDelete(), mockParams)
+    expect(res.status).toBe(409)
+    expect(await res.json()).toEqual({
+      error: 'Cannot delete: topic has resources assigned. Reassign them first.',
+    })
+  })
+
+  it('returns 204 and deletes topic when no resources assigned', async () => {
+    vi.mocked(auth).mockResolvedValueOnce(mockSession as any)
+    vi.mocked(db.topic.findUnique).mockResolvedValueOnce({
+      ...mockTopic,
+      _count: { resources: 0 },
+    } as any)
+    vi.mocked(db.topic.delete).mockResolvedValueOnce(mockTopic as any)
+    const res = await DELETE(makeDelete(), mockParams)
+    expect(res.status).toBe(204)
+    expect(db.topic.delete).toHaveBeenCalledWith({ where: { id: 'topic1' } })
+  })
+})
