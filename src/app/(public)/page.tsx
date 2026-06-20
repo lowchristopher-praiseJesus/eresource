@@ -63,7 +63,7 @@ export default async function HomePage() {
       {/* Hero */}
       <section className="text-center py-16">
         <h1 className="text-5xl font-bold tracking-tight">eResource</h1>
-        <p className="mt-3 text-lg text-slate-500">
+        <p className="mt-3 text-lg text-slate-600">
           Your ministry's digital resource library
         </p>
         <form action="/search" method="get" className="mt-8 max-w-xl mx-auto flex flex-col sm:flex-row gap-2">
@@ -98,7 +98,7 @@ export default async function HomePage() {
                 <Icon className={`h-6 w-6 ${color}`} />
               </div>
               <span className="font-medium text-sm">{label}</span>
-              <span className="text-xs text-slate-500">{description}</span>
+              <span className="text-xs text-slate-600">{description}</span>
             </Link>
           ))}
         </div>

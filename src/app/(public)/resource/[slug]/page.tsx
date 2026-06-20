@@ -93,7 +93,7 @@ export default async function ResourcePage({ params }: Props) {
           <CopyLinkButton />
         </div>
 
-        <div className="text-sm text-slate-400 pt-2 border-t border-slate-100">
+        <div className="text-sm text-slate-600 pt-2 border-t border-slate-100">
           {new Date(resource.createdAt).toLocaleDateString('en-SG', {
             day: 'numeric',
             month: 'short',

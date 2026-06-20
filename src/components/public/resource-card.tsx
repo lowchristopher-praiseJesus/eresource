@@ -61,7 +61,7 @@ export function ResourceCard({ resource }: { resource: Resource }) {
       <div className="p-3 space-y-2">
         <p className="font-medium text-sm line-clamp-2">{resource.name}</p>
         {resource.description && (
-          <p className="text-xs text-slate-500 line-clamp-2">{resource.description}</p>
+          <p className="text-xs text-slate-600 line-clamp-2">{resource.description}</p>
         )}
         <div>
           <Badge variant="secondary">{CATEGORY_LABELS[resource.category]}</Badge>
@@ -74,13 +74,13 @@ export function ResourceCard({ resource }: { resource: Resource }) {
               </span>
             ))}
             {extraTags > 0 && (
-              <span className="text-xs px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">
+              <span className="text-xs px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
                 +{extraTags}
               </span>
             )}
           </div>
         )}
-        <div className="flex items-center justify-between text-xs text-slate-400">
+        <div className="flex items-center justify-between text-xs text-slate-600">
           <span>♥ {resource.likeCount}</span>
           <span>
             {new Date(resource.createdAt).toLocaleDateString('en-SG', {

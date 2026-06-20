@@ -32,14 +32,14 @@ export function MediaPlayer({ resource }: { resource: Resource }) {
 
   if (mimeType?.startsWith('video/')) {
     return (
-      <video controls src={src} className="w-full rounded-lg bg-black" />
+      <video controls src={src} aria-label={name} className="w-full rounded-lg bg-black" />
     )
   }
 
   if (mimeType?.startsWith('audio/')) {
     return (
       <div className="rounded-lg border border-slate-200 bg-slate-50 p-6">
-        <audio controls src={src} className="w-full" />
+        <audio controls src={src} aria-label={name} className="w-full" />
       </div>
     )
   }

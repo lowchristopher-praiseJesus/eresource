@@ -114,7 +114,7 @@ export default async function SearchPage({
             {query ? `Results for "${query}"` : 'Search'}
           </h1>
           {query && (
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="text-sm text-slate-600 mt-1">
               {total} result{total !== 1 ? 's' : ''}
             </p>
           )}
@@ -128,8 +128,8 @@ export default async function SearchPage({
 
       {query && results.length === 0 && (
         <div className="text-center py-16">
-          <p className="text-slate-500 text-lg">No results for &quot;{query}&quot;</p>
-          <p className="text-slate-400 mt-2">Try browsing by category</p>
+          <p className="text-slate-600 text-lg">No results for &quot;{query}&quot;</p>
+          <p className="text-slate-600 mt-2">Try browsing by category</p>
           <div className="flex gap-3 justify-center mt-4">
             {CATEGORY_LINKS.map(({ label, href }) => (
               <Link
@@ -166,7 +166,7 @@ export default async function SearchPage({
                   ← Previous
                 </span>
               )}
-              <span className="text-sm text-slate-500">
+              <span className="text-sm text-slate-600">
                 Page {page} of {totalPages}
               </span>
               {page < totalPages ? (

@@ -26,7 +26,7 @@ export function Sidebar({ userEmail }: SidebarProps) {
         <p className="text-base font-semibold tracking-tight">eResource</p>
         <p className="text-xs text-slate-500 mt-0.5">Admin</p>
       </div>
-      <nav className="flex-1 px-3">
+      <nav className="flex-1 px-3" aria-label="Admin navigation">
         {NAV_LINKS.map(({ href, label }) => (
           <Link
             key={href}

@@ -62,7 +62,7 @@ export async function CategoryPage({ category, searchParams }: CategoryPageProps
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-semibold">{label}</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-slate-600 mt-1">
             {total} resource{total !== 1 ? 's' : ''}
           </p>
         </div>
@@ -82,7 +82,7 @@ export async function CategoryPage({ category, searchParams }: CategoryPageProps
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-8">
-          <span className="text-sm text-slate-500">
+          <span className="text-sm text-slate-600">
             Page {page} of {totalPages}
           </span>
           <div className="flex gap-2">
