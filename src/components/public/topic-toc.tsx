@@ -18,25 +18,27 @@ export function TopicToc({ topics }: TopicTocProps) {
 
   return (
     <section>
-      <h2 className="text-xl font-semibold mb-4">Browse by Topic</h2>
-      <div className="rounded-lg border border-slate-200 divide-y divide-slate-100">
+      <h2 className="text-2xl font-semibold mb-5">Browse by Topic</h2>
+      <div className="rounded-lg border border-[oklch(0.90_0.010_40)] divide-y divide-[oklch(0.93_0.008_40)]">
         {topics.map((topic) => (
           <Link
             key={topic.id}
             href={`/topic/${topic.slug}`}
-            className="flex items-center justify-between px-5 py-3.5 hover:bg-slate-50 transition-colors group"
+            className="flex items-center justify-between px-5 py-3.5 hover:bg-accent transition-colors group"
           >
             <div className="flex items-center gap-3">
-              <span className="text-sm text-slate-400 w-5 text-right shrink-0">{topic.order}.</span>
-              <span className="text-sm font-medium text-slate-800 group-hover:text-slate-900">
+              <span className="text-xs text-primary font-medium w-5 text-right shrink-0">
+                {topic.order}.
+              </span>
+              <span className="text-sm font-medium text-foreground">
                 {topic.name}
               </span>
             </div>
             <div className="flex items-center gap-3 shrink-0">
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-muted-foreground">
                 {topic._count.resources} {topic._count.resources === 1 ? 'resource' : 'resources'}
               </span>
-              <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-slate-500 transition-colors" />
+              <ChevronRight className="h-4 w-4 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
             </div>
           </Link>
         ))}
