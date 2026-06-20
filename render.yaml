@@ -2,8 +2,15 @@ services:
   - type: web
     name: eresource
     runtime: node
-    buildCommand: npm ci && npx prisma generate && npx prisma migrate deploy && npm run build
-    startCommand: npm start
+    buildCommand: >-
+      npm ci &&
+      npx prisma generate &&
+      npx prisma migrate deploy &&
+      npm run build &&
+      cp -r .next/static .next/standalone/.next/static &&
+      cp -r public .next/standalone/public
+    startCommand: node .next/standalone/server.js
+    healthCheckPath: /
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -28,5 +35,4 @@ services:
 
 databases:
   - name: eresource-db
-    databaseName: eresource
     plan: starter
