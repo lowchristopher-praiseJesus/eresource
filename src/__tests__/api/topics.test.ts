@@ -13,6 +13,7 @@ vi.mock('@/lib/db', () => ({
       delete: vi.fn(),
       aggregate: vi.fn(),
     },
+    $transaction: vi.fn(),
   },
 }))
 
@@ -155,6 +156,9 @@ describe('PATCH /api/topics/[id]', () => {
     const neighbor = { ...mockTopic, id: 'topic2', order: 1 }
     vi.mocked(db.topic.findFirst).mockResolvedValueOnce(neighbor as any) // neighbor at order=1
     vi.mocked(db.topic.update).mockResolvedValue({ ...mockTopic, order: 1 } as any)
+    ;(db.$transaction as any).mockImplementationOnce(async (ops: any[]) =>
+      Promise.all(ops.map((op: any) => op))
+    )
     const res = await PATCH(makePatch({ order: 1 }), mockParams)
     expect(res.status).toBe(200)
     expect(db.topic.update).toHaveBeenCalledTimes(2) // neighbor swap + self update

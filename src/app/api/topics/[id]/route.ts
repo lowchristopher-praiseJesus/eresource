@@ -27,17 +27,24 @@ export async function PATCH(
 
   const { order, ...rest } = parsed.data
 
+  let topic
   if (order !== undefined && order !== existing.order) {
     const neighbor = await db.topic.findFirst({ where: { order } })
     if (neighbor && neighbor.id !== id) {
-      await db.topic.update({ where: { id: neighbor.id }, data: { order: existing.order } })
+      const [, updated] = await db.$transaction([
+        db.topic.update({ where: { id: neighbor.id }, data: { order: existing.order } }),
+        db.topic.update({ where: { id }, data: { ...rest, order } }),
+      ])
+      topic = updated
+    } else {
+      topic = await db.topic.update({ where: { id }, data: { ...rest, order } })
     }
+  } else {
+    topic = await db.topic.update({
+      where: { id },
+      data: { ...rest, ...(order !== undefined ? { order } : {}) },
+    })
   }
-
-  const topic = await db.topic.update({
-    where: { id },
-    data: { ...rest, ...(order !== undefined ? { order } : {}) },
-  })
   return NextResponse.json({ topic })
 }
 

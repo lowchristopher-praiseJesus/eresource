@@ -40,6 +40,14 @@ export async function POST(req: NextRequest) {
 
   const data = parsed.data
 
+  // Validate topicIds exist (if provided)
+  if (data.topicIds && data.topicIds.length > 0) {
+    const validCount = await db.topic.count({ where: { id: { in: data.topicIds } } })
+    if (validCount !== data.topicIds.length) {
+      return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
+    }
+  }
+
   if (data.resourceType === 'FILE') {
     const detected = data.category ?? categoryFromMime(data.mimeType)
     if (!detected) return NextResponse.json({ error: 'Invalid input' }, { status: 400 })

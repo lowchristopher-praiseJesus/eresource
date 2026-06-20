@@ -34,6 +34,14 @@ export async function PATCH(
   const { topicIds, ...resourceData } = parsed.data
   const data: z.infer<typeof updateSchema> = { ...resourceData }
 
+  // Validate topicIds exist (if provided)
+  if (topicIds && topicIds.length > 0) {
+    const validCount = await db.topic.count({ where: { id: { in: topicIds } } })
+    if (validCount !== topicIds.length) {
+      return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
+    }
+  }
+
   // Enforce max-6 pinned when pinning a previously-unpinned resource
   if (data.isPinned === true && !existing.isPinned) {
     // Non-atomic count check: acceptable for single-admin deployments
