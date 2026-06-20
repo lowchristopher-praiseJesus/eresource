@@ -30,6 +30,12 @@ export async function POST(req: NextRequest) {
   const ext = parts.length > 1 ? parts.pop() : 'bin'
   const key = `uploads/${Date.now()}-${crypto.randomUUID()}.${ext}`
 
+  if (process.env.NODE_ENV === 'development') {
+    const localUrl = new URL('/api/upload/local', process.env.NEXTAUTH_URL ?? 'http://localhost:3000')
+    localUrl.searchParams.set('key', key)
+    return NextResponse.json({ url: localUrl.toString(), key })
+  }
+
   const url = await getSignedUrl(
     r2,
     new PutObjectCommand({

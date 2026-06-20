@@ -21,19 +21,32 @@ export interface ResourceFormProps {
   description: string
   tagsInput: string
   category: Category | ''
+  allTopics: { id: string; name: string }[]
+  selectedTopicIds: string[]
   onNameChange: (v: string) => void
   onDescriptionChange: (v: string) => void
   onTagsInputChange: (v: string) => void
   onCategoryChange: (v: Category) => void
+  onTopicIdsChange: (ids: string[]) => void
   disabled?: boolean
 }
 
 export function ResourceForm({
   name, description, tagsInput, category,
+  allTopics, selectedTopicIds,
   onNameChange, onDescriptionChange, onTagsInputChange, onCategoryChange,
+  onTopicIdsChange,
   disabled = false,
 }: ResourceFormProps) {
   const chips = tagsInput.split(',').map(t => t.trim()).filter(Boolean)
+
+  function toggleTopic(id: string) {
+    onTopicIdsChange(
+      selectedTopicIds.includes(id)
+        ? selectedTopicIds.filter(t => t !== id)
+        : [...selectedTopicIds, id]
+    )
+  }
 
   return (
     <div className="space-y-5">
@@ -107,6 +120,26 @@ export function ResourceForm({
           </SelectContent>
         </Select>
       </div>
+
+      {allTopics.length > 0 && (
+        <div className="space-y-2">
+          <Label>Topics</Label>
+          <div className="space-y-2 max-h-56 overflow-y-auto rounded-md border border-slate-200 p-3">
+            {allTopics.map((topic) => (
+              <label key={topic.id} className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={selectedTopicIds.includes(topic.id)}
+                  onChange={() => toggleTopic(topic.id)}
+                  disabled={disabled}
+                  className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500"
+                />
+                <span className="text-sm text-slate-700">{topic.name}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -8,13 +8,25 @@ interface Props {
 
 export default async function EditResourcePage({ params }: Props) {
   const { id } = await params
-  const resource = await db.resource.findUnique({ where: { id } })
+  const [resource, allTopics] = await Promise.all([
+    db.resource.findUnique({
+      where: { id },
+      include: { topics: { select: { topicId: true } } },
+    }),
+    db.topic.findMany({ orderBy: { order: 'asc' }, select: { id: true, name: true } }),
+  ])
   if (!resource) notFound()
+
+  const selectedTopicIds = resource.topics.map(t => t.topicId)
 
   return (
     <div className="max-w-2xl">
       <h1 className="text-2xl font-semibold mb-6">Edit Resource</h1>
-      <EditResourceForm resource={resource} />
+      <EditResourceForm
+        resource={resource}
+        allTopics={allTopics}
+        selectedTopicIds={selectedTopicIds}
+      />
     </div>
   )
 }

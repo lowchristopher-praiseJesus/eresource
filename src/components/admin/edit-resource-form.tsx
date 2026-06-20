@@ -9,14 +9,17 @@ import type { Resource, Category } from '@prisma/client'
 
 interface EditResourceFormProps {
   resource: Resource
+  allTopics: { id: string; name: string }[]
+  selectedTopicIds: string[]
 }
 
-export function EditResourceForm({ resource }: EditResourceFormProps) {
+export function EditResourceForm({ resource, allTopics, selectedTopicIds: initialTopicIds }: EditResourceFormProps) {
   const router = useRouter()
   const [name, setName] = useState(resource.name)
   const [description, setDescription] = useState(resource.description ?? '')
   const [tagsInput, setTagsInput] = useState(resource.tags.join(', '))
   const [category, setCategory] = useState<Category | ''>(resource.category)
+  const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>(initialTopicIds)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -39,6 +42,7 @@ export function EditResourceForm({ resource }: EditResourceFormProps) {
           description: description.trim() || null,
           tags,
           category,
+          topicIds: selectedTopicIds,
         }),
       })
       if (!res.ok) {
@@ -72,10 +76,13 @@ export function EditResourceForm({ resource }: EditResourceFormProps) {
             description={description}
             tagsInput={tagsInput}
             category={category}
+            allTopics={allTopics}
+            selectedTopicIds={selectedTopicIds}
             onNameChange={setName}
             onDescriptionChange={setDescription}
             onTagsInputChange={setTagsInput}
             onCategoryChange={setCategory}
+            onTopicIdsChange={setSelectedTopicIds}
             disabled={submitting}
           />
 
