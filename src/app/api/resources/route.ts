@@ -16,6 +16,7 @@ const fileBodySchema = z.object({
   description: z.string().max(2000).optional(),
   tags: z.array(z.string().max(50)).max(20).optional(),
   category: z.enum(CATEGORIES).optional(),
+  topicIds: z.array(z.string()).optional(),
 })
 
 const youtubeBodySchema = z.object({
@@ -25,6 +26,7 @@ const youtubeBodySchema = z.object({
   description: z.string().max(2000).optional(),
   tags: z.array(z.string().max(50)).max(20).optional(),
   category: z.enum(CATEGORIES).optional(),
+  topicIds: z.array(z.string()).optional(),
 })
 
 const createSchema = z.discriminatedUnion('resourceType', [fileBodySchema, youtubeBodySchema])
@@ -51,6 +53,9 @@ export async function POST(req: NextRequest) {
         fileKey: data.fileKey,
         mimeType: data.mimeType,
         fileSizeBytes: data.fileSizeBytes,
+        ...(data.topicIds?.length
+          ? { topics: { create: data.topicIds.map(topicId => ({ topicId })) } }
+          : {}),
       },
     })
     return NextResponse.json({ resource }, { status: 201 })
@@ -67,6 +72,9 @@ export async function POST(req: NextRequest) {
         category,
         resourceType: 'YOUTUBE',
         youtubeUrl: data.youtubeUrl,
+        ...(data.topicIds?.length
+          ? { topics: { create: data.topicIds.map(topicId => ({ topicId })) } }
+          : {}),
       },
     })
     return NextResponse.json({ resource }, { status: 201 })

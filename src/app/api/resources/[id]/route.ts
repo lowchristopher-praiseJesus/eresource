@@ -12,6 +12,7 @@ const updateSchema = z.object({
   category: z.enum(['VIDEO', 'AUDIO', 'DOCUMENT', 'PICTURE']).optional(),
   isPinned: z.boolean().optional(),
   pinnedOrder: z.number().int().positive().nullable().optional(),
+  topicIds: z.array(z.string()).optional(),
 })
 
 export async function PATCH(
@@ -30,7 +31,8 @@ export async function PATCH(
   const existing = await db.resource.findUnique({ where: { id } })
   if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-  const data: z.infer<typeof updateSchema> = { ...parsed.data }
+  const { topicIds, ...resourceData } = parsed.data
+  const data: z.infer<typeof updateSchema> = { ...resourceData }
 
   // Enforce max-6 pinned when pinning a previously-unpinned resource
   if (data.isPinned === true && !existing.isPinned) {
@@ -58,7 +60,20 @@ export async function PATCH(
     data.pinnedOrder = null
   }
 
-  const resource = await db.resource.update({ where: { id }, data })
+  const resource = await db.resource.update({
+    where: { id },
+    data: {
+      ...data,
+      ...(topicIds !== undefined
+        ? {
+            topics: {
+              deleteMany: {},
+              create: topicIds.map(topicId => ({ topicId })),
+            },
+          }
+        : {}),
+    },
+  })
   return NextResponse.json({ resource })
 }
 
