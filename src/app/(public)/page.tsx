@@ -66,9 +66,9 @@ export default async function HomePage() {
         <p className="mt-3 text-lg text-slate-500">
           Your ministry's digital resource library
         </p>
-        <form action="/search" method="get" className="mt-8 max-w-xl mx-auto flex gap-2">
+        <form action="/search" method="get" className="mt-8 max-w-xl mx-auto flex flex-col sm:flex-row gap-2">
           <Input name="q" placeholder="Search resources…" className="flex-1" />
-          <Button type="submit">Search</Button>
+          <Button type="submit" className="sm:w-auto">Search</Button>
         </form>
       </section>
 

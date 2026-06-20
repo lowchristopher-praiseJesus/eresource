@@ -24,11 +24,11 @@ export function Header({ activeCategory }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-10 bg-white border-b border-slate-200">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center gap-6">
-        <Link href="/" className="text-lg font-semibold tracking-tight flex-shrink-0">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 h-16 flex items-center gap-4">
+        <Link href="/" className="text-lg font-semibold tracking-tight flex-shrink-0 min-w-0">
           eResource
         </Link>
-        <form onSubmit={handleSearch} className="flex-1 max-w-xl">
+        <form onSubmit={handleSearch} className="flex-1 min-w-0 max-w-xl">
           <Input
             value={query}
             onChange={e => setQuery(e.target.value)}

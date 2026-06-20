@@ -47,7 +47,7 @@ export function LikeButton({ resourceId, initialCount }: LikeButtonProps) {
       onClick={handleLike}
       disabled={liked}
       aria-label={liked ? 'Liked' : 'Like this resource'}
-      className={`inline-flex items-center gap-2 px-4 py-2 rounded-md border text-sm font-medium transition-colors ${
+      className={`inline-flex items-center gap-2 px-4 py-2 rounded-md border text-sm font-medium transition-colors min-w-fit ${
         liked
           ? 'border-rose-200 bg-rose-50 text-rose-600 cursor-default'
           : 'border-slate-200 hover:bg-slate-50 text-slate-700'
