@@ -88,11 +88,16 @@ export async function DELETE(
   const existing = await db.resource.findUnique({ where: { id } })
   if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-  if (existing.fileKey) {
-    await r2.send(new DeleteObjectCommand({
-      Bucket: process.env.R2_BUCKET_NAME!,
-      Key: existing.fileKey,
-    }))
+  if (existing.fileKey && process.env.R2_ACCESS_KEY_ID !== 'placeholder') {
+    try {
+      await r2.send(new DeleteObjectCommand({
+        Bucket: process.env.R2_BUCKET_NAME!,
+        Key: existing.fileKey,
+      }))
+    } catch (err) {
+      // Log but don't block — DB record is the source of truth
+      console.warn('R2 delete failed (resource DB record will still be removed):', err)
+    }
   }
 
   await db.resource.delete({ where: { id } })
