@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator'
 const NAV_LINKS = [
   { href: '/admin/dashboard', label: 'Dashboard' },
   { href: '/admin/resources', label: 'Resources' },
+  { href: '/admin/topics', label: 'Topics' },
 ]
 
 interface SidebarProps {
