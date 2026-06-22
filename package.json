@@ -13,7 +13,7 @@
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts",
-    "seed:admin": "tsx prisma/seed.ts --email admin@missionwork.com --password password"
+    "seed:admin": "tsx prisma/seed.ts --email admin@missionwork.com --password B7QtIUFlvjWhyvKiLHhvGRv"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1072.0",
