@@ -9,11 +9,11 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "seed:admin": "tsx prisma/seed.ts --email admin@missionwork.com --password B7QtIUFlvjWhyvKiLHhvGRv"
   },
   "prisma": {
-    "seed": "tsx prisma/seed.ts",
-    "seed:admin": "tsx prisma/seed.ts --email admin@missionwork.com --password B7QtIUFlvjWhyvKiLHhvGRv"
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1072.0",
