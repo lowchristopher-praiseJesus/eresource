@@ -72,7 +72,7 @@ export default async function ResourcePage({ params, searchParams }: Props) {
       </nav>
 
       {/* Media */}
-      <MediaPlayer resource={resource} />
+      <MediaPlayer resource={resource} fileUrl={fileUrl} />
 
       {/* Metadata */}
       <div className="mt-8 space-y-4">

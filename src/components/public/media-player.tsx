@@ -1,15 +1,14 @@
 'use client'
 
 import { type Resource } from '@prisma/client'
-import { getFileUrl } from '@/lib/utils'
 import { FileText } from 'lucide-react'
 
 function extractYoutubeId(url: string): string | null {
   return url.match(/(?:v=|youtu\.be\/)([^&\s]+)/)?.[1] ?? null
 }
 
-export function MediaPlayer({ resource }: { resource: Resource }) {
-  const { resourceType, mimeType, fileKey, name, youtubeUrl } = resource
+export function MediaPlayer({ resource, fileUrl }: { resource: Resource; fileUrl: string | null }) {
+  const { resourceType, mimeType, name, youtubeUrl } = resource
 
   if (resourceType === 'YOUTUBE' && youtubeUrl) {
     const videoId = extractYoutubeId(youtubeUrl)
@@ -27,8 +26,8 @@ export function MediaPlayer({ resource }: { resource: Resource }) {
     )
   }
 
-  if (!fileKey) return null
-  const src = getFileUrl(fileKey)
+  if (!fileUrl) return null
+  const src = fileUrl
 
   if (mimeType?.startsWith('video/')) {
     return (
