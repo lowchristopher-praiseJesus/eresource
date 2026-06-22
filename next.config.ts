@@ -1,7 +1,6 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
   experimental: {
     staleTimes: {
       dynamic: 300, // restore ~v14 default; prevents router from refetching dynamic pages too aggressively
